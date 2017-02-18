@@ -46,7 +46,7 @@
             // multiplying the number of days in the data range by
             // the desired width per day.
             var startDate = moment(data[0].time)
-            var endDate = moment(data[data.length-1].time)\
+            var endDate = moment(data[data.length-1].time)
             var diffDays = endDate.diff(startDate, 'days')
 
             element.style.width = diffDays * 120 + 'px'
