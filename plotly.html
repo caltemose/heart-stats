@@ -1,0 +1,60 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Plotly</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="http://momentjs.com/downloads/moment.min.js"></script>
+    <script src="heart-config.js"></script>
+    <script src="heart-stats.js"></script>
+</head>
+<body>
+    <h1>Heart Data</h1>
+    <div id="chart"></div>
+    <script>
+        var element = document.getElementById('chart')
+
+        var root = window.HEART
+        var config = window.HEART.config
+        var data = window.HEART.data
+
+        if (!root || !config || !data) {
+            console.error('Missing required window.HEART global object with configuration and heart data!')
+            var html = '<h2 style="color:red">Data Missing!</h2>'
+            html += '<p>This file requires <code>window.HEART</code> to be defined with <code>window.HEART.config</code> and <code>window.HEART.data</code> properties.</p>'
+            element.innerHTML = html
+
+        } else {
+            var graphData = [];
+
+            // organize data for Plotly - requires separate x and y arrays
+            // for each coordinate pair
+            for(var j=0; j<config.length; j++) {
+                var obj = Object.assign({}, config[j].base)
+                obj.x = []
+                obj.y = []
+
+                for(var i=0; i<data.length; i++) {
+                    obj.x.push(data[i].time)
+                    obj.y.push(data[i][config[j].key])
+                }
+                graphData.push(obj)
+            }
+
+            // the graph container width is dynamic and determined by
+            // multiplying the number of days in the data range by
+            // the desired width per day.
+            var startDate = moment(data[0].time)
+            var endDate = moment(data[data.length-1].time)\
+            var diffDays = endDate.diff(startDate, 'days')
+
+            element.style.width = diffDays * 120 + 'px'
+            element.style.height = '500px'
+
+            // create the graph
+            Plotly.newPlot('chart', graphData)
+        }
+    </script>
+</body>
+</html>
