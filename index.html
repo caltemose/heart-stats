@@ -8,6 +8,10 @@
     <script src="http://momentjs.com/downloads/moment.min.js"></script>
     <script src="heart-config.js"></script>
     <script src="heart-stats.js"></script>
+    <style type="text/css">
+    h1 { margin-bottom: 0; text-align: center; font-family: sans-serif }
+    #chart { margin: 0 auto }
+    </style>
 </head>
 <body>
     <h1>Heart Data</h1>
@@ -17,6 +21,7 @@
 
         var root = window.HEART
         var config = window.HEART.config
+        var defaults = window.HEART.defaults
         var data = window.HEART.data
 
         if (!root || !config || !data) {
@@ -34,6 +39,8 @@
                 var obj = Object.assign({}, config[j].base)
                 obj.x = []
                 obj.y = []
+                obj.mode = undefined
+                obj.type = 'scatter'
 
                 for(var i=0; i<data.length; i++) {
                     obj.x.push(data[i].time)
@@ -49,8 +56,16 @@
             var endDate = moment(data[data.length-1].time)
             var diffDays = endDate.diff(startDate, 'days')
 
-            element.style.width = diffDays * 120 + 'px'
-            element.style.height = '500px'
+            element.style.width = diffDays * 130 + 'px'
+            element.style.height = '400px'
+
+            // the default graph lines for min/max systolic & diastolic
+            for (var i in defaults) {
+                var line = defaults[i]
+                line.x = [data[0].time, data[data.length-1].time]
+                line.y = [line.value, line.value]
+                graphData.unshift(line)
+            }
 
             // create the graph
             Plotly.newPlot('chart', graphData)
